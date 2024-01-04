@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	    <RootNamespace>Inkwell.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+	    <AssemblyName>Inkwell.$(MSBuildProjectName)</AssemblyName>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="DotNetLibs.Api" Version="231213.2222.0" />
+		<PackageReference Include="DotNetLibs.Core" Version="231213.2222.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- Hide nuget folder from Solution Explorer -->
+		<Compile Remove="nuget\**" />
+		<EmbeddedResource Remove="nuget\**" />
+		<None Remove="nuget\**" />
+	</ItemGroup>
+
+	<Target Name="OnBuild" AfterTargets="Build">
+		<Exec Command="aws codeartifact login --tool dotnet --repository DotNetLibs --domain wjb --domain-owner 144953083930 --region eu-west-2" />
+		<Exec Command="dotnet pack -p:PackageVersion=$([System.DateTime]::UtcNow.ToString(&quot;yyMMdd.HHmm&quot;)) --no-build --configuration $(Configuration) --output &quot;$(ProjectDir)nuget&quot;" />
+		<Exec Command="dotnet nuget push &quot;$(ProjectDir)nuget/Inkwell.$(ProjectName).$([System.DateTime]::UtcNow.ToString(&quot;yyMMdd.HHmm&quot;)).0.nupkg&quot; --source &quot;https://wjb-144953083930.d.codeartifact.eu-west-2.amazonaws.com/nuget/DotNetLibs/v3/index.json&quot;" />
+	</Target>
+
+</Project>
