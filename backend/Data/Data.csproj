@@ -7,12 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Repositories\Log\Types\" />
-    <Folder Include="Values\" />
-    <Folder Include="Records\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="FluentNHibernate" Version="3.3.0" />
     <PackageReference Include="NHibernate" Version="5.4.7" />
     <PackageReference Include="Npgsql" Version="8.0.0" />
