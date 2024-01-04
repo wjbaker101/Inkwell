@@ -20,6 +20,10 @@
 		<None Remove="nuget\**" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Api\Api.csproj" />
+	</ItemGroup>
+
 	<Target Name="OnBuild" AfterTargets="Build">
 		<Exec Command="aws codeartifact login --tool dotnet --repository DotNetLibs --domain wjb --domain-owner 144953083930 --region eu-west-2" />
 		<Exec Command="dotnet pack -p:PackageVersion=$([System.DateTime]::UtcNow.ToString(&quot;yyMMdd.HHmm&quot;)) --no-build --configuration $(Configuration) --output &quot;$(ProjectDir)nuget&quot;" />

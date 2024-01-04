@@ -1,4 +1,4 @@
-﻿namespace Inkwell.Client.Models;
+﻿namespace Api.Models;
 
 public sealed class InkwellLogModel
 {

@@ -1,4 +1,4 @@
-﻿using Inkwell.Client.Models;
+﻿using Api.Models;
 
 namespace Inkwell.Client.Types;
 

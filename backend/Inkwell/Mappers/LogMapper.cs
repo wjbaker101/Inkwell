@@ -1,5 +1,5 @@
-﻿using Data.Records;
-using Inkwell.Client.Models;
+﻿using Api.Models;
+using Data.Records;
 
 namespace Inkwell.Mappers;
 
