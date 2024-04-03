@@ -1,6 +1,4 @@
-﻿using DotNetLibs.Api.Types;
-using DotNetLibs.Core.Types;
-using Inkwell.Client.Types;
+﻿using Inkwell.Client.Types;
 using System.Text;
 using System.Text.Json;
 
@@ -8,7 +6,7 @@ namespace Inkwell.Client;
 
 public interface IInkwellClient
 {
-    Task<Result<CreateLogResponse>> Log(CreateLogRequest request, CancellationToken cancellationToken);
+    Task Log(CreateLogRequest request);
 }
 
 public sealed class InkwellClient : IInkwellClient
@@ -22,32 +20,34 @@ public sealed class InkwellClient : IInkwellClient
         _options = options;
     }
 
-    public async Task<Result<CreateLogResponse>> Log(CreateLogRequest request, CancellationToken cancellationToken)
+    public async Task Log(CreateLogRequest request)
     {
-        var requestBody = JsonSerializer.Serialize(new
+        try
         {
-            _options.AppName,
-            request.LogLevel,
-            request.Message,
-            request.StackTrace,
-            request.JsonData
-        });
+            var cancellationTokenSource = new CancellationTokenSource();
+            cancellationTokenSource.CancelAfter(TimeSpan.FromSeconds(10));
 
-        var message = new HttpRequestMessage
+            var requestBody = JsonSerializer.Serialize(new
+            {
+                _options.AppName,
+                request.LogLevel,
+                request.Message,
+                request.StackTrace,
+                JsonData = request.JsonData != null ? JsonSerializer.Serialize(request.JsonData) : null
+            });
+
+            var message = new HttpRequestMessage
+            {
+                Method = HttpMethod.Post,
+                RequestUri = new Uri($"{_options.BaseUrl}/api/logger/logs"),
+                Content = new StringContent(requestBody, Encoding.UTF8, "application/json")
+            };
+
+            await _httpClient.SendAsync(message, cancellationTokenSource.Token);
+        }
+        catch
         {
-            Method = HttpMethod.Post,
-            RequestUri = new Uri($"{_options.BaseUrl}/api/logger/logs"),
-            Content = new StringContent(requestBody, Encoding.UTF8, "application/json")
-        };
-
-        var response = await _httpClient.SendAsync(message, cancellationToken);
-
-        var responseBody = await response.Content.ReadAsStringAsync(cancellationToken);
-
-        var responseAsJson = JsonSerializer.Deserialize<ApiResultResponse<CreateLogResponse>>(responseBody);
-        if (responseAsJson == null)
-            return Result<CreateLogResponse>.Failure("Unable to parse response.");
-
-        return responseAsJson.Result;
+            // Do nothing
+        }
     }
 }

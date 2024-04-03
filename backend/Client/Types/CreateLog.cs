@@ -1,16 +1,16 @@
-﻿using Api.Models;
-
-namespace Inkwell.Client.Types;
+﻿namespace Inkwell.Client.Types;
 
 public sealed class CreateLogRequest
 {
     public required InkwellLogLevel LogLevel { get; init; }
     public required string Message { get; init; }
     public required string? StackTrace { get; init; }
-    public required string? JsonData { get; init; }
+    public required object? JsonData { get; init; }
 }
 
-public sealed class CreateLogResponse
+public enum InkwellLogLevel
 {
-    public required InkwellLogModel Log { get; init; }
+    Unknown = 0,
+    Info = 1,
+    Error = 2
 }
